@@ -1,0 +1,142 @@
+---
+title: 'Final Project: Looking at Marvel versus DC'
+author: 'Haley Marconi'
+date: 'December 7th, 2021'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dslabs)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(scales)
+```
+
+```{r}
+library(openintro)
+mydata = read.csv("marvdc.csv")
+mydata
+```
+
+```{r}
+print(paste(nrow(mydata), "observations"))
+print(paste(ncol(mydata), "variables"))
+str(mydata)
+```
+
+```{r}
+marvonly <- mydata %>%
+  filter(Company == 'Marvel')
+
+marvonly
+
+ggplot(marvonly, aes(x = Rate, y = Opening.Weekend.USA)) +
+  list(
+    geom_point(),
+    aes(color = Release),
+    scale_color_gradient(high = "#132B43", low = "#56B1F7"),
+    xlab("IMDB Rating (0-10)"),
+    ylab("USA Opening Weekend ($)"),
+    scale_y_continuous(labels=comma),
+    ggtitle('Marvel Movie Performance 2008-2019'),
+    NULL)
+```
+
+```{r}
+dconly <- mydata %>%
+  filter(Company == 'DC')
+
+dconly
+
+ggplot(dconly, aes(x = Rate, y = Opening.Weekend.USA)) + 
+  list(
+    geom_point(),
+    aes(color = Release),
+    scale_color_gradient(high = "#132B43", low = "#56B1F7"),
+    xlab("IMDB Rating (0-10)"),
+    ylab("USA Opening Weekend ($)"),
+    ggtitle('DC Movie Performance 2004-2019'),
+    scale_y_continuous(labels=comma),
+    NULL)
+```
+
+```{r}
+ggplot(mydata, aes(x = Rate, y = Opening.Weekend.USA, color = Company)) +  geom_point() + xlab("IMDB Rating (0-10)") + ylab("USA Opening Weekend ($)") + scale_y_continuous(labels=comma) + ggtitle('The Performance of Marvel Versus DC Films 2004-2019') + scale_color_manual(values = c("#00AFBB", "#FC4E07"))
+```
+
+```{r}
+cor(marvonly$Rate, marvonly$Opening.Weekend.USA)
+cor(dconly$Rate, dconly$Opening.Weekend.USA)
+```
+
+```{r}
+ggplot(mydata, aes(fill = Company, x = Rate, y = Opening.Weekend.USA)) + xlab("IMDB Rating (0-10)") + ylab("USA Opening Weekend ($)") + scale_y_continuous(labels=comma) + geom_bar(position = "stack", stat = 'identity') + ggtitle('The Performance of Marvel Versus DC Films 2004-2019') + scale_fill_manual(values = c("#00AFBB", "#FC4E07"))
+```
+
+```{r}
+ggplot(mydata, aes(fill = Company, x = Release, y = Gross.USA)) + xlab("Release Year (2004-2019)") + ylab("Gross USA Earnings ($)") + scale_y_continuous(labels=comma) + geom_bar(position="stack", stat="identity") + ggtitle('The Performance of Marvel Versus DC Films 2004-2019') + scale_fill_manual(values = c("#00AFBB", "#FC4E07")) 
+```
+
+
+                
+```{r}
+ggplot(mydata, aes(fill = Company, x = Release, y = Gross.Worldwide)) + xlab("Release Year (2004-2019)") + ylab("Gross Worldwide Earnings ($)") + scale_y_continuous(labels=comma) + geom_bar(position="stack", stat="identity") + ggtitle('The Performance of Marvel Versus DC Films 2004-2019') + scale_fill_manual(values = c("#00AFBB", "#FC4E07"))
+```
+```{r}
+mydata$Release <- as.factor(mydata$Release)
+ggplot(mydata, aes(x = Release, y = Gross.Worldwide)) + 
+  scale_color_manual(values = c("#00AFBB", "#FC4E07")) +
+  geom_boxplot() +
+  geom_jitter(shape = 16, position = position_jitter(0.2), aes(color = Company)) +
+  xlab("Release Year (2004-2019)") + 
+  ylab("Gross Worldwide Earnings ($)") +
+  scale_y_continuous(labels=comma) + 
+  ggtitle('The Performance of Marvel Versus DC Films 2004-2019')
+  
+```
+
+```{r}
+avg_open_marv <- mean(marvonly$Opening.Weekend.USA)
+avg_open_marv
+
+dconly <- mydata %>%
+  filter(Company == 'DC')
+
+avg_open_dc <- mean(dconly$Opening.Weekend.USA)
+avg_open_dc
+
+cor(mydata$Rate, mydata$Opening.Weekend.USA)
+
+mydata2 <- mydata[order(-mydata$Rate),]
+mydata2[, c("Original.Title", "Company", "Rate")] 
+
+mydata3 <- mydata[order(-mydata$Opening.Weekend.USA),]
+mydata3[, c("Original.Title", "Company", "Rate", "Opening.Weekend.USA")] 
+
+mydata4 <- mydata[order(-mydata$Gross.USA),]
+mydata4[, c("Original.Title", "Company", "Rate", "Gross.USA")] 
+```
+
+
+```{r}
+summary(mydata)
+summary(marvonly)
+summary(dconly)
+```
+
+```{r}
+marveldc.lm <- lm(Rate ~ Opening.Weekend.USA, data = mydata)
+summary(marveldc.lm)
+
+marvonly.lm <- lm(Rate ~ Opening.Weekend.USA, data = marvonly)
+summary(marvonly.lm)
+
+dconly.lm <- lm(Rate ~ Opening.Weekend.USA, data = dconly)
+summary(dconly.lm)
+```
