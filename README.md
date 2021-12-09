@@ -6,4 +6,4 @@ marvdc.csv : This file contains data collected from kaggle (https://www.kaggle.c
 
 Final_ProjBSDS100.Rmd : This R Markdown file contains all of the analysis I performed on the data including filter, visualizing, and linear regression. 
 
-Final
+Final_ProjBSDS100.pdf : This is the knit PDF file of the code in my R Markdown file. 
